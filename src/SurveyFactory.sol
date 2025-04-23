@@ -2,13 +2,14 @@
 pragma solidity ^0.8.13;
 
 import "./Survey.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract SurveyFactory {
+contract SurveyFactory is Ownable {
     mapping(uint256 => address) private surveyAddresses;
-    address private surveyFactoryOwner;
 
-    function createSurvey(uint256 surveyID) public {
-        require(surveyFactoryOwner == msg.sender, "Only the owner can create surveys");
+    constructor() Ownable(msg.sender) {}
+
+    function createSurvey(uint256 surveyID) public onlyOwner {
         require(surveyAddresses[surveyID] == address(0), "Survey with this ID already exists");
         Survey newSurvey = new Survey();
         surveyAddresses[surveyID] = address(newSurvey);
